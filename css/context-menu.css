@@ -1,0 +1,22 @@
+#context-menu {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    /* Add more styles as desired */
+}
+
+.context-list {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.context-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.context-item i {
+    margin-right: 5px;
+}

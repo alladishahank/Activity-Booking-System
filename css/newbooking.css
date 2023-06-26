@@ -1,0 +1,12 @@
+label.required::after {
+    content: "*";
+    color: red;
+    margin-left: 2px;
+}
+
+.custom-container {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
