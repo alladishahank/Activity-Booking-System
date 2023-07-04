@@ -10,6 +10,7 @@ const templatesPath = path.join(__dirname, '../templates');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.set("view engine","ejs");
 
 app.get('/index.html', function(req, res) {
   res.sendFile(path.join(templatesPath, 'index.html'));
@@ -26,12 +27,12 @@ app.post('/register', async function(req, res) {
   const { email, username, password, confirmpassword } = req.body;
 
   if (email === '' || username === '' || password === '' || confirmpassword === '') {
-    res.status(400).send("Do not leave input fields empty");
+    res.render("alert",{errorMsg: "Do not leave the input fields empty"})
     return;
   }
 
   if (password !== confirmpassword) {
-    res.status(500).send("Passwords do not match");
+    res.render("alert",{errorMsg: "Passwords do not match"})
     return;
   }  
 
@@ -41,7 +42,7 @@ app.post('/register', async function(req, res) {
   try {
     const existingUser = await query(checkUserQuery, checkUserValues);
     if (existingUser.rows.length > 0) {
-      res.status(500).send("Email already exists");
+      res.render("alert",{errorMsg:"Email already exists"});
       return;
     }
 
@@ -50,31 +51,50 @@ app.post('/register', async function(req, res) {
 
     await query(newUserQuery, newUserValues);
     console.log('Registration successful');
-    res.redirect('/index.html');
+    res.render('index',{name: username});
   } catch (err) {
     console.error('Error executing query:', err);
-    res.status(400).send("Error registering user");
+    res.render("alert",{errorMsg: "Error registering user"});
   }
 });
 
+app.get('/login', function(req, res) {
+  res.sendFile(path.join(templatesPath, 'login.html'));
+});
+
 app.post('/login', async function(req, res) {
-  const { username, password } = req.body;
-  if (username === '' || password === '') {
-    res.status(400).send("Do not leave input fields empty");
+  const { email, password } = req.body;
+  if (email === '' || password === '') {
+    res.render("alertLogin",{errorMsg: "Do not leave the input fields empty"});
     return;
   }
 
-  const userQuery = 'SELECT * FROM users WHERE username = $1';
-  const values = [username];
+  const userQuery = 'SELECT * FROM users WHERE email = $1';
+  const values = [email];
 
   try {
     const result = await query(userQuery, values);
+    if(result.rows.length > 0)
+    {
+      const stored_password = result.rows[0].password;
+      const username = result.rows[0].username;
+      if(stored_password !== password)
+      {
+        res.render("alertLogin",{errorMsg: "Incorrect Password"});
+      }
+      else
+      {
+        res.render('index',{name: username});
+      }
+    }
+    else
+    {
+      res.render("alertLogin",{errorMsg: "Email doesn't exist"});
+    }
   } catch (err) {
     console.error('Error executing query:', err);
     res.status(500).send("Error logging in");
   }
-
-  res.redirect('/index.html');
 });
 
 app.listen(3000, function() {
