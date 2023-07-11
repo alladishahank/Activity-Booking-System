@@ -3,6 +3,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { query } from './db/db.js';
+import crypto from 'crypto';
+import session from 'express-session';
 
 const app = express();
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -12,9 +14,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine","ejs");
 
-app.get('/index.html', function(req, res) {
-  res.sendFile(path.join(templatesPath, 'index.html'));
-});
+const generateSecretKey = () => {
+  const secret = crypto.randomBytes(32).toString('hex');
+  return secret;
+};
+const secretKey = generateSecretKey();
+app.use(session({
+  secret: secretKey,
+  resave: false,
+  saveUninitialized: true
+}));
 
 app.get('/register', function(req, res) {
   res.sendFile(path.join(templatesPath, 'register.html'));
@@ -96,6 +105,37 @@ app.post('/login', async function(req, res) {
     res.status(500).send("Error logging in");
   }
 });
+
+app.get('/index.html', function(req, res) {
+  res.sendFile(path.join(templatesPath, 'index.html'));
+});
+
+app.post('/index.html', async function(req,res){
+    const username
+});
+
+app.get('/newbooking.html', async function(req, res) {
+  try {
+    const result = await query('SELECT * FROM activities');
+    const activities = result.rows.map(row => row.name);
+    res.render('newbooking', { activities });
+  } catch (error) {
+    console.error('Error retrieving activities:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/newbooking.html', async function(req, res) {
+});
+
+app.get('/bookingdetails', function(req, res) {
+  res.sendFile(path.join(templatesPath, 'booking-details.html'));
+});
+
+app.get('/profile', function(req, res) {
+  res.sendFile(path.join(templatesPath, 'profile.html'));
+});
+
 
 app.listen(3000, function() {
   console.log('Server is up and running on port 3000');
