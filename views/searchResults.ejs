@@ -57,9 +57,15 @@
         <div class="container">
             <div class="row justify-content-center">
                 <% for (let i = 0; i < facilitiesResult.length; i++) { %>
-                    <div class="card col-md-8 mb-4">
+                    <div class="card col-md-8 mb-4" style="float: left;">
                         <div class="card-header">
-                            <h4 class="facility-name"><%= facilitiesResult[i].facility_name %></h4>
+                            <h4 class="facility-name"><%= facilitiesResult[i].facility_name %></h4> 
+                            <% for (let j = 0; j < facilitiesResult[i].star_rating; j++) { %>
+                                <span class="fa fa-star checked"></span>
+                            <% } %>
+                            <% for (let k = facilitiesResult[i].star_rating; k < 5; k++) { %>
+                                <span class="fa fa-star"></span>
+                            <% } %>                           
                         </div>
                         <div class="card-body">
                             <p class="card-text">
