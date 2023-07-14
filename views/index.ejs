@@ -56,6 +56,7 @@
                             <th scope="col">Activity</th>
                             <th scope="col">Facility</th>
                             <th scope="col">Confirmed</th>
+                            <th scope="col">Group Size</th>
                             <th scope="col">Date</th>
                             <th scope="col">Start Time</th>
                             <th scope="col">End Time</th>
@@ -74,6 +75,7 @@
                             <% if(userBookings[i].status == 'waitlisted') { %>
                                 <td class="status-waitlisted"><%= userBookings[i].status.charAt(0).toUpperCase() + userBookings[i].status.slice(1)%></td>
                             <% } %>
+                            <td ><%= userBookings[i].group_size %></td>
                             <td><%= userBookings[i].booking_date.toDateString().split("00:00:00 GMT+0530 (India Standard Time)")[0] %></td>
                             <td><%= userBookings[i].start_hour %></td>
                             <td><%= userBookings[i].end_hour %></td>
