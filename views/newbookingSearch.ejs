@@ -121,10 +121,10 @@
                       <p class="card-text"><strong>Address:</strong> <%= facilityDetails.address_line %>, <%= facilityDetails.city %>,
                         <%= facilityDetails.state %>, <%= facilityDetails.country %>, <%= facilityDetails.postal_code %>
                       </p>
-                      <p class="card-text">Contact Details:</p>
-                      <p class="card-text"><%= facilityDetails.contact_email %></p>
-                      <p class="card-text"><%= facilityDetails.contact_phone %></p>
-                      <p class="card-text">Timings: <%= facilityDetails.opening_hours %> - <%= facilityDetails.closing_hours %></p>
+                      <h6 class="card-subtitle mb-2"><strong>Contact Details:</strong></h6>
+                      <p class="card-text" style="margin-top: 5px;"><%= facilityDetails.contact_email %></p>
+                      <p class="card-text" style="margin-top: 5px;"><%= facilityDetails.contact_phone %></p>
+                      <p class="card-text"><strong>Timings: </strong> <%= facilityDetails.opening_hours %> - <%= facilityDetails.closing_hours %></p>
                     </div>
                   </div>
             </div>

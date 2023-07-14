@@ -68,7 +68,12 @@
                             <td scope="row"><%= i+1 %></td>
                             <td><%= activities[i] %></td>
                             <td><%= facilities[i] %></td>
-                            <td class="status-confirmed">Confirmed</td>
+                            <% if(userBookings[i].status == 'completed') { %>
+                                <td class="status-confirmed"><%= userBookings[i].status.charAt(0).toUpperCase() + userBookings[i].status.slice(1)%></td>
+                            <% } %>
+                            <% if(userBookings[i].status == 'waitlisted') { %>
+                                <td class="status-waitlisted"><%= userBookings[i].status.charAt(0).toUpperCase() + userBookings[i].status.slice(1)%></td>
+                            <% } %>
                             <td><%= userBookings[i].booking_date.toDateString().split("00:00:00 GMT+0530 (India Standard Time)")[0] %></td>
                             <td><%= userBookings[i].start_hour %></td>
                             <td><%= userBookings[i].end_hour %></td>
