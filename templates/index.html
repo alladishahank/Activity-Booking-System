@@ -20,12 +20,12 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <form class="d-flex flex-grow-1">
-                        <input class="form-control me-2 search-input" type="search" placeholder="Search for Activity" aria-label="Search">
-                        <a href="templates/results.html" class="search-button">
-                            <img src="svgs/search.svg" alt="search icon" style="margin-right: 50px; margin-top: 10px;">
-                        </a>
-                    </form>
+                    <form class="d-flex flex-grow-1" action="/searchResults" method="GET">
+                        <input class="form-control me-2 search-input" type="search" placeholder="Search for Activity" aria-label="Search" name="activitySearch">
+                        <button type="submit" class="btn btn-dark">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </form>                      
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="index.html">Home</a>

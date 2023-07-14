@@ -20,12 +20,12 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <form class="d-flex flex-grow-1">
-                        <input class="form-control me-2 search-input" type="search" placeholder="Search for Activity" aria-label="Search">
-                        <a href="templates/results.html" class="search-button">
-                            <img src="svgs/search.svg" alt="search icon" style="margin-right: 50px; margin-top: 10px;">
-                        </a>
-                    </form>
+                    <form class="d-flex flex-grow-1" action="/searchResults" method="GET">
+                        <input class="form-control me-2 search-input" type="search" placeholder="Search for Activity" aria-label="Search" name="activitySearch">
+                        <button type="submit" class="btn btn-dark">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </form>                      
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="index.html">Home</a>
@@ -45,7 +45,7 @@
         </nav>
     </div>
     <div>
-        <h1 class="header-text">Welcome <%= name %>!</h1>
+        <h1 class="header-text" id="Welcome-header">Welcome <%= name %>!</h1>
         <h4 class="header-text">Current Bookings</h4>
         <div class="row justify-content-center round">
             <div class="col-auto shadow">
@@ -56,73 +56,27 @@
                             <th scope="col">Activity</th>
                             <th scope="col">Facility</th>
                             <th scope="col">Confirmed</th>
-                            <th scope="col">Group Size</th>
                             <th scope="col">Date</th>
-                            <th scope="col">Slot Timing</th>
+                            <th scope="col">Start Time</th>
+                            <th scope="col">End Time</th>
                             <th scope="col">  </th>
                         </tr>
                     </thead>
                     <tbody>
+                        <% for(var i = 0; i < userBookings.length; i++) { %>
                         <tr>
-                            <td scope="row">1</td>
-                            <td>Swimming</td>
-                            <td>YMCA</td>
+                            <td scope="row"><%= i+1 %></td>
+                            <td><%= activities[i] %></td>
+                            <td><%= facilities[i] %></td>
                             <td class="status-confirmed">Confirmed</td>
-                            <td>2</td>
-                            <td>22/5/23</td>
-                            <td>9:30</td>
+                            <td><%= userBookings[i].booking_date.toDateString().split("00:00:00 GMT+0530 (India Standard Time)")[0] %></td>
+                            <td><%= userBookings[i].start_hour %></td>
+                            <td><%= userBookings[i].end_hour %></td>
                             <td class="actions-cell">
                                 <img class="dots-svg" src="svgs/three-dots-vertical.svg" alt="Actions" id="context-menu-btn">
                             </td>
                         </tr>
-                        <tr>
-                            <td scope="row">2</td>
-                            <td>Football</td>
-                            <td>Mustang</td>
-                            <td class="status-waitlisted">Waitlisted</td>
-                            <td>4</td>
-                            <td>22/5/23</td>
-                            <td>9:30</td>
-                            <td class="actions-cell">
-                                <img class="dots-svg" src="svgs/three-dots-vertical.svg" alt="Actions" id="context-menu-btn">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row">3</td>
-                            <td>Swimming</td>
-                            <td>YMCA</td>
-                            <td class="status-confirmed">Confirmed</td>
-                            <td>5</td>
-                            <td>22/5/23</td>
-                            <td>9:30</td>
-                            <td class="actions-cell">
-                                <img class="dots-svg" src="svgs/three-dots-vertical.svg" alt="Actions" id="context-menu-btn">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row">4</td>
-                            <td>Football</td>
-                            <td>YMCA</td>
-                            <td class="status-waitlisted">Waitlisted</td>
-                            <td>7</td>
-                            <td>22/5/23</td>
-                            <td>9:30</td>
-                            <td class="actions-cell">
-                                <img class="dots-svg" src="svgs/three-dots-vertical.svg" alt="Actions" id="context-menu-btn">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row">5</td>
-                            <td>Swimming</td>
-                            <td>Coppell Highschool</td>
-                            <td class="status-waitlisted">Waitlisted</td>
-                            <td>1</td>
-                            <td>22/5/23</td>
-                            <td>9:30</td>
-                            <td class="actions-cell">
-                                <img class="dots-svg" src="svgs/three-dots-vertical.svg" alt="Actions" id="context-menu-btn">
-                            </td>
-                        </tr>
+                        <% }; %>
                     </tbody>
                 </table>
             </div>
