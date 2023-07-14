@@ -5,6 +5,7 @@ import path from 'path';
 import { query } from './db/db.js';
 import crypto from 'crypto';
 import session from 'express-session';
+import { stat } from 'fs/promises';
 
 const app = express();
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -166,7 +167,7 @@ app.get('/newbooking.html', async function(req, res) {
   }
 });
 
-app.post('/newbooking', async function(req, res) {
+app.post('/newbooking.html', async function(req, res) {
 });
 
 app.get('/bookingdetails', function(req, res) {
@@ -205,6 +206,24 @@ app.post('/searchResults', function(req,res){
 
 });
 
+app.get('/newBookingSearch', async function(req,res){
+  try{
+    const facility = req.query.facilityName;
+    const activity = req.query.activityName;
+    const getFacilityDetails = 'SELECT address_line,city,state,country,postal_code,star_rating,description,contact_email,contact_phone,opening_hours,closing_hours from facilities where name = $1';
+    const values = [facility]; 
+    const facilityDetails = await query(getFacilityDetails,values);
+
+    res.render('newBookingSearch',{ facilityDetails:facilityDetails.rows[0], facility:facility, activity:activity})
+  }
+  catch(error){
+
+  }
+});
+
+app.post('/newBookingSearch', async function(req,res){
+  
+})
 
 app.get('/profile', function(req, res) {
   res.sendFile(path.join(templatesPath, 'profile.html'));
