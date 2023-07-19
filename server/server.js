@@ -244,7 +244,6 @@ app.post('/newBookingSearch', async function(req, res) {
       res.redirect('/login');
       return;
     }
-    console.log(userId);
     const activity = req.body.activity;
     const facility = req.body.facility;
     const date = req.body.date;
@@ -265,13 +264,22 @@ app.post('/newBookingSearch', async function(req, res) {
     const getStatus = 'SELECT slots FROM facility_activity WHERE facility_id = $1 AND activity_id = $2';
     const statusValues = [fid, aid];
     const statusResult = await query(getStatus, statusValues);
-    const slots = statusResult.rows[0].slots;
+    let slots = statusResult.rows[0].slots;
     var bookingStatus;
+    slots--;
+    const updateSlots = 'UPDATE facility_activity SET slots = $1 WHERE facility_id = $2 AND activity_id = $3';
+    const slotQueryValues = [slots,fid,aid];
     if(slots < 0 && slots > -3){
       bookingStatus = 'waitlisted';
+      await query(updateSlots,slotQueryValues);
+    }
+    else if(slots > 0){
+      bookingStatus = 'completed';
+      await query(updateSlots,slotQueryValues);
     }
     else{
-      bookingStatus = 'completed';
+      slots++;
+      res.status(500).send('Please pick something else as all slots are booked');
     }
 
     const createNewBooking = 'INSERT INTO bookings (fid, aid, uid, booking_date, start_hour, end_hour, status, group_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
