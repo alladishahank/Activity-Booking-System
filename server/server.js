@@ -24,7 +24,7 @@ const secretKey = generateSecretKey();
 app.use(session({
   secret: secretKey,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }));
 
 app.get('/register', function (req, res) {
@@ -240,6 +240,10 @@ app.get('/newBookingSearch', async function(req, res) {
 app.post('/newBookingSearch', async function(req, res) {
   try {
     const userId = req.session.userId;
+    if (!userId) {
+      res.redirect('/login');
+      return;
+    }
     console.log(userId);
     const activity = req.body.activity;
     const facility = req.body.facility;
@@ -262,9 +266,16 @@ app.post('/newBookingSearch', async function(req, res) {
     const statusValues = [fid, aid];
     const statusResult = await query(getStatus, statusValues);
     const slots = statusResult.rows[0].slots;
+    var bookingStatus;
+    if(slots < 0 && slots > -3){
+      bookingStatus = 'waitlisted';
+    }
+    else{
+      bookingStatus = 'completed';
+    }
 
     const createNewBooking = 'INSERT INTO bookings (fid, aid, uid, booking_date, start_hour, end_hour, status, group_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
-    const values = [fid, aid, userId, date, startTime, endTime, slots, groupSize];
+    const values = [fid, aid, userId, date, startTime, endTime, bookingStatus, groupSize];
     await query(createNewBooking, values);
 
     res.redirect('/index.html');
