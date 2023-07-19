@@ -72,7 +72,7 @@
                                 <strong>Address:</strong> <%= facilitiesResult[i].address_line %>, <%= facilitiesResult[i].city %>,
                                 <%= facilitiesResult[i].state %>, <%= facilitiesResult[i].country %>, <%= facilitiesResult[i].postal_code %>
                             </p>
-                            <a href="/newBookingSearch?facilityName=<%= facilitiesResult[i].facility_name %>&activityName=<%= activity %>" class="btn btn-primary">Book Here</a>
+                            <a href="/newBookingSearch?facilityName=<%= facilitiesResult[i].facility_name %>&activityName=<%= exactActivity %>" class="btn btn-primary">Book Here</a>
                         </div>
                     </div>
                 <% } %>

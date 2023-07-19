@@ -24,7 +24,7 @@ const secretKey = generateSecretKey();
 app.use(session({
   secret: secretKey,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 }));
 
 app.get('/register', function (req, res) {
@@ -177,6 +177,21 @@ app.get('/bookingdetails', function(req, res) {
 app.get('/searchResults', async function(req, res) {
   try {
     const activity = req.query.activitySearch;
+
+    const searchForActivities = `
+      SELECT name FROM activities WHERE similarity(name, $1) > 0.3
+      ORDER BY similarity(name, $1) DESC`;
+    const activityValues = [activity];
+    const activityResult = await query(searchForActivities,activityValues);
+
+    let exactActivity;
+    if(activityResult.rows.length > 0){
+      exactActivity = activityResult.rows[0].name;
+    }
+    else{
+      exactActivity = activity;
+    }
+
     const searchForFacilities = `
     SELECT f.name AS facility_name, f.address_line, f.city, f.state, f.country, f.postal_code, f.star_rating
     FROM facilities f
@@ -189,7 +204,7 @@ app.get('/searchResults', async function(req, res) {
     const facilitiesResult = await query(searchForFacilities, values);
     if(facilitiesResult.rows.length > 0)
     {
-      res.render('searchResults', { facilitiesResult:facilitiesResult.rows, activity:activity });
+      res.render('searchResults', { facilitiesResult:facilitiesResult.rows, activity:activity, exactActivity:exactActivity });
     }
     else
     {
@@ -203,27 +218,62 @@ app.get('/searchResults', async function(req, res) {
 });
 
 app.post('/searchResults', function(req,res){
-
 });
 
-app.get('/newBookingSearch', async function(req,res){
-  try{
+app.get('/newBookingSearch', async function(req, res) {
+  try {
     const facility = req.query.facilityName;
     const activity = req.query.activityName;
-    const getFacilityDetails = 'SELECT address_line,city,state,country,postal_code,star_rating,description,contact_email,contact_phone,opening_hours,closing_hours from facilities where name = $1';
-    const values = [facility]; 
-    const facilityDetails = await query(getFacilityDetails,values);
+    const getFacilityDetails = 'SELECT address_line, city, state, country, postal_code, star_rating, description, contact_email, contact_phone, opening_hours, closing_hours FROM facilities WHERE name = $1';
+    const values = [facility];
+    const facilityDetailsResult = await query(getFacilityDetails, values);
+    const facilityDetails = facilityDetailsResult.rows[0];
 
-    res.render('newBookingSearch',{ facilityDetails:facilityDetails.rows[0], facility:facility, activity:activity})
-  }
-  catch(error){
-
+    res.render('newBookingSearch', { facilityDetails, facility, activity });
+  } catch (error) {
+    console.error('Error retrieving facility details:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
-app.post('/newBookingSearch', async function(req,res){
-  
-})
+
+app.post('/newBookingSearch', async function(req, res) {
+  try {
+    const userId = req.session.userId;
+    console.log(userId);
+    const activity = req.body.activity;
+    const facility = req.body.facility;
+    const date = req.body.date;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const groupSize = parseInt(req.body.group);
+
+    const getActivityId = 'SELECT aid FROM activities WHERE name = $1';
+    const activities = [activity];
+    const aidResult = await query(getActivityId, activities);
+    const aid = aidResult.rows[0].aid;
+
+    const getFacilitiesId = 'SELECT fid FROM facilities WHERE name = $1';
+    const facilities = [facility];
+    const fidResult = await query(getFacilitiesId, facilities);
+    const fid = fidResult.rows[0].fid;
+
+    const getStatus = 'SELECT slots FROM facility_activity WHERE facility_id = $1 AND activity_id = $2';
+    const statusValues = [fid, aid];
+    const statusResult = await query(getStatus, statusValues);
+    const slots = statusResult.rows[0].slots;
+
+    const createNewBooking = 'INSERT INTO bookings (fid, aid, uid, booking_date, start_hour, end_hour, status, group_size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+    const values = [fid, aid, userId, date, startTime, endTime, slots, groupSize];
+    await query(createNewBooking, values);
+
+    res.redirect('/index.html');
+  } catch (error) {
+    console.error('Error creating new booking:', error);
+    res.status(500).send('Error creating new booking');
+  }
+});
+
 
 app.get('/profile', function(req, res) {
   res.sendFile(path.join(templatesPath, 'profile.html'));
