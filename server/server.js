@@ -6,6 +6,7 @@ import { query } from './db/db.js';
 import crypto from 'crypto';
 import session from 'express-session';
 import { stat } from 'fs/promises';
+import { all } from 'axios';
 
 const app = express();
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -24,7 +25,10 @@ const secretKey = generateSecretKey();
 app.use(session({
   secret: secretKey,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
 
 app.get('/register', function (req, res) {
@@ -63,7 +67,7 @@ app.post('/register', async function (req, res) {
     req.session.userId = userId; 
 
     console.log('Registration successful');
-    res.redirect('/index.html');
+    res.redirect('/index');
   } 
   catch (err) {
     console.error('Error executing query:', err);
@@ -98,7 +102,7 @@ app.post('/login', async function (req, res) {
       else {
         req.session.userId = userId; 
 
-        res.redirect('/index.html');
+        res.redirect('/index');
       }
     } 
     else {
@@ -111,7 +115,7 @@ app.post('/login', async function (req, res) {
   }
 });
 
-app.get('/index.html', async function (req, res) {
+app.get('/index', async function (req, res) {
   try {
     const userId = req.session.userId; 
     if (!userId) {
@@ -151,11 +155,11 @@ app.get('/index.html', async function (req, res) {
 });
 
 
-app.post('/index.html', async function (req, res) {
+app.post('/index', async function (req, res) {
   
 });
 
-app.get('/newbooking.html', async function(req, res) {
+app.get('/newbooking', async function(req, res) {
   try {
     const result = await query('SELECT * FROM activities');
     const activities = result.rows.map(row => row.name);
@@ -167,7 +171,7 @@ app.get('/newbooking.html', async function(req, res) {
   }
 });
 
-app.post('/newbooking.html', async function(req, res) {
+app.post('/newbooking', async function(req, res) {
 });
 
 app.get('/bookingdetails', function(req, res) {
@@ -286,13 +290,24 @@ app.post('/newBookingSearch', async function(req, res) {
     const values = [fid, aid, userId, date, startTime, endTime, bookingStatus, groupSize];
     await query(createNewBooking, values);
 
-    res.redirect('/index.html');
+    res.redirect('/index');
   } catch (error) {
     console.error('Error creating new booking:', error);
     res.status(500).send('Error creating new booking');
   }
 });
 
+app.get('/facilities', async function(req, res){
+  const getAllFacilities = 'SELECT * FROM facilities ORDER BY star_rating DESC'; 
+  const AllFacilities = await query(getAllFacilities);
+  res.render('facilities', { AllFacilities: AllFacilities.rows });
+});
+
+
+
+app.post('/facilities', async function(req,res){
+
+});
 
 app.get('/profile', function(req, res) {
   res.sendFile(path.join(templatesPath, 'profile.html'));

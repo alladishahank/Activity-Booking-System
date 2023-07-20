@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .checked {
+          color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <%- include('main-nav') %> 
+    </div>
+    <h1 class="header-text text-center mt-4">Our facilities</h1>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <% for (let i = 0; i < AllFacilities.length; i++) { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2"><%= AllFacilities[i].name %></h5>
+                            <% for (let j = 0; j < AllFacilities[i].star_rating; j++) { %>
+                                <span class="fa fa-star checked"></span>
+                            <% } %>
+                            <% for (let k = AllFacilities[i].star_rating; k < 5; k++) { %>
+                                <span class="fa fa-star"></span>
+                            <% } %> 
+                            <p class="card-text"><%= AllFacilities[i].description %></p>
+                            <p class="card-text"><strong>Address:</strong> <%= AllFacilities[i].address_line %>, <%= AllFacilities[i].city %>,
+                                <%= AllFacilities[i].state %>, <%= AllFacilities[i].country %>, <%= AllFacilities[i].postal_code %>
+                            </p>
+                            <h6 class="card-subtitle mb-2"><strong>Contact Details:</strong></h6>
+                            <p class="card-text" style="margin-top: 5px;"><%= AllFacilities[i].contact_email %></p>
+                            <p class="card-text" style="margin-top: 5px;"><%= AllFacilities[i].contact_phone %></p>
+                            <p class="card-text"><strong>Timings: </strong> <%= AllFacilities[i].opening_hours %> - <%= AllFacilities[i].closing_hours %></p>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+
+</html>
